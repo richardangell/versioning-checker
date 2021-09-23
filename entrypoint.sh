@@ -21,9 +21,10 @@ IFS="," read -a tracked_files <<< $INPUT_TRACKED_FILES
 # Print any unchanged tracked files
 echo ""; echo "Checking for changes in ${tracked_files[@]}..."; echo ""
 for f in ${tracked_files[@]}; do
-  if ! grep -Fxq "$f" changed.txt
+  modified_f=$(git diff --diff-filter=M --name-status $branch..$base | grep $f | wc -l)
+  if (($modified_f != 1));
   then
-    echo "$f has not been updated"
+    echo "$f file not found modified between branches"
     result=1
   fi
 done
